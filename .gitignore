@@ -13,3 +13,7 @@ data/backups/*
 # Customized environment variables / overrides
 docker-compose.override.yml
 .env
+
+# Development certificates created with mkcert
+./config/ssl/*
+!./config/ssl/.gitkeep
