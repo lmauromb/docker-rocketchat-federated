@@ -137,6 +137,14 @@ This message will be thrown by the application container, if you initially start
 
 The initial database seed is probably not yet fully imported into your MongoDB. As above, wait a bit until it's processed in the background.
 
+
+## Federation
+
+Check the following links:
+- https://matrix.org/docs/guides/understanding-synapse-hosting
+- https://www.mariobuonomo.dev/blog/traefik-ssl-self-signed-development-mode
+- https://github.com/RocketChat/federation-airgap/blob/main/MANUAL.md
+
 ## Contributing
 
 1. Fork it

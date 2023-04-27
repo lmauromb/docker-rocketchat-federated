@@ -34,6 +34,35 @@ services:
       MONGODB_ENABLE_JOURNAL: true
       ALLOW_EMPTY_PASSWORD: yes
 
+  synapse:
+    image: docker.io/matrixdotorg/synapse:v1.78.0
+    hostname: ${MATRIX_HOSTNAME}
+    restart: unless-stopped
+    environment:
+      - SYNAPSE_SERVER_NAME=${MATRIX_HOSTNAME}
+      - SYNAPSE_CONFIG_PATH=/data/homeserver.yaml
+    volumes:
+      - synapse_data:/data
+    depends_on:
+      - synapse_db
+    labels:
+      traefik.http.routers.synapse.rule: Host(`${MATRIX_HOSTNAME}`)
+      traefik.http.routers.synapse.tls: true
+      traefik.http.routers.synapse.entrypoints: https
+
+  synapse_db:
+    image: docker.io/postgres:14
+    restart: unless-stopped
+    volumes:
+      - synapse_db_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=synapse
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_INITDB_ARGS=--encoding=UTF-8 --lc-collate=C --lc-ctype=C
+    labels:
+      - "traefik.enable=false"
+
   traefik:
     image: docker.io/traefik:v2.6.1
     restart: unless-stopped
@@ -41,7 +70,12 @@ services:
      - 80:80
      - 443:443
      - ${ROCKETCHAT_PORT:-3000}:3000
+     - ${MATRIX_PORT:-8008}:8008
      - ${TRAEFIK_DASHBOARD_PORT:-8080}:8080
     volumes:
       - ./config:/root/.config
       - ${DOCKER_SOCKET}:/var/run/docker.sock:ro
+
+volumes:
+  synapse_data:
+  synapse_db_data:
